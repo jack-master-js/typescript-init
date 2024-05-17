@@ -6,8 +6,8 @@ export default async (req: any, res: any, next: any) => {
     const { token } = req.body;
     try {
         const decode: any = jwt.verify(token, process.env.TOKEN_SECRET);
-        const { account } = decode;
-        const user = await User.findOne();
+        const { email } = decode;
+        const user = await User.findOne({ email });
 
         if (user) {
             next();
