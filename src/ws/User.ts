@@ -1,6 +1,6 @@
 import logger from '../common/utils/logger';
 import request from './request';
-import protor from '../common/utils/protor';
+// import protor from '../common/utils/protor';
 
 class User {
     socket: any;

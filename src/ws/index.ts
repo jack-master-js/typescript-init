@@ -3,7 +3,7 @@ import logger from '../common/utils/logger';
 import { getWsClientIp, getQueryStr } from '../common/utils';
 import queryString from 'querystring';
 import User from './User';
-import protor from '../common/utils/protor';
+// import protor from '../common/utils/protor';
 
 class WS {
     onlineUsers: Map<any, any>;
