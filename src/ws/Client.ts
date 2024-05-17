@@ -1,6 +1,6 @@
 import logger from '../common/utils/logger';
 import request from './request';
-// import protor from '../common/utils/protor';
+import protor from '../common/utils/protor';
 
 class Client {
     socket: any;
@@ -20,14 +20,22 @@ class Client {
     }
 
     emit(cmd: any, msg: any) {
-        this.socket.send(JSON.stringify({ cmd, msg }));
-        // this.socket.send(protor.encode(cmd, msg));
+        if (process.env.PROTO === 'yes') {
+            this.socket.send(protor.encode(cmd, msg));
+        } else {
+            this.socket.send(JSON.stringify({ cmd, msg }));
+        }
     }
 
     handler() {
         this.socket.on('message', (data: any) => {
-            const { cmd, msg } = JSON.parse(data);
-            // const { cmd, msg } = protor.decode(data);
+            let message: any = {};
+            if (process.env.PROTO === 'yes') {
+                message = protor.decode(data);
+            } else {
+                message = JSON.parse(data);
+            }
+            const { cmd, msg } = message;
             if (cmd) this.trigger(cmd, msg, false);
         });
     }

@@ -3,7 +3,7 @@ import logger from '../common/utils/logger';
 import { getWsClientIp, getQueryStr } from '../common/utils';
 import queryString from 'querystring';
 import Client from './Client';
-// import protor from '../common/utils/protor';
+import protor from '../common/utils/protor';
 
 class WS {
     onlineClients: Map<any, any>;
@@ -106,8 +106,11 @@ class WS {
 
     //当前建立连接的用户
     socketMsg(socket: any, cmd: any, msg: any) {
-        socket.send(JSON.stringify({ cmd, msg }));
-        // socket.send(protor.encode(cmd, msg));
+        if (process.env.PROTO === 'yes') {
+            socket.send(protor.encode(cmd, msg));
+        } else {
+            socket.send(JSON.stringify({ cmd, msg }));
+        }
     }
 
     //所有用户
