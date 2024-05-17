@@ -1,9 +1,9 @@
 import logger from '../common/utils/logger';
 
-export default (player: any) => {
-    player.on('ping', (msg: any) => {
+export default (user: any) => {
+    user.on('ping', (msg: any) => {
         logger.info(msg);
-        player.emit('pong', {
+        user.emit('pong', {
             clientTime: msg.clientTime,
             serverTime: Date.now(),
         });

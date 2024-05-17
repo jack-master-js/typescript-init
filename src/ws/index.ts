@@ -2,16 +2,16 @@ import WebSocket from 'ws';
 import logger from '../common/utils/logger';
 import { getWsClientIp, getQueryStr } from '../common/utils';
 import queryString from 'querystring';
-import Player from './Player';
+import User from './User';
 
-class WsServer {
-    onlinePlayers: Map<any, any>;
-    offlinePlayers: Map<any, any>;
+class WS {
+    onlineUsers: Map<any, any>;
+    offlineUsers: Map<any, any>;
     server: any;
 
     constructor() {
-        this.onlinePlayers = new Map();
-        this.offlinePlayers = new Map();
+        this.onlineUsers = new Map();
+        this.offlineUsers = new Map();
     }
 
     async start(server: any) {
@@ -43,49 +43,49 @@ class WsServer {
             if (!userID) throw Error('invalid user');
             socket.id = userID;
 
-            let onlinePlayer = this.onlinePlayers.get(userID);
-            let offlinePlayer = this.offlinePlayers.get(userID);
-            let player = onlinePlayer || offlinePlayer;
+            let onlineUser = this.onlineUsers.get(userID);
+            let offlineUser = this.offlineUsers.get(userID);
+            let user = onlineUser || offlineUser;
 
-            if (!player) {
-                //new player
-                player = this.newPlayer(socket);
+            if (!user) {
+                //new user
+                user = this.newUser(socket);
 
-                player.ip = ip;
-                player.id = userID;
+                user.ip = ip;
+                user.id = userID;
 
-                player.onNewConnection(socket);
+                user.onNewConnection(socket);
             } else {
-                //old player
-                if (onlinePlayer) {
+                //old user
+                if (onlineUser) {
                     throw Error('you already login somewhere else.');
                     // this.kickOut(
-                    //     onlinePlayer.socket,
+                    //     onlineUser.socket,
                     //     'you login somewhere else.'
                     // )
-                    // player.onKickOut(socket)
+                    // user.onKickOut(socket)
                 }
 
-                if (offlinePlayer) {
-                    this.offlinePlayers.delete(userID);
+                if (offlineUser) {
+                    this.offlineUsers.delete(userID);
                 }
 
-                player.onReConnection(socket);
+                user.onReConnection(socket);
             }
 
             //用户上线
-            player.online(socket, async () => {
-                this.onlinePlayers.set(userID, player);
+            user.online(socket, async () => {
+                this.onlineUsers.set(userID, user);
 
                 this.socketMsg(socket, 'loginRes', {
-                    playerInfo: player.info,
+                    userInfo: user.info,
                 });
             });
 
             //用户下线
-            player.onOffline(socket, async () => {
-                this.onlinePlayers.delete(userID);
-                this.offlinePlayers.set(userID, player);
+            user.onOffline(socket, async () => {
+                this.onlineUsers.delete(userID);
+                this.offlineUsers.set(userID, user);
             });
         } catch (e) {
             this.kickOut(socket, e.message);
@@ -94,12 +94,13 @@ class WsServer {
 
     checkUser(socket: any, token: any) {
         if (!token) this.kickOut(socket, 'need token');
-        return 'test';
+        // todo: find user in db
+        return 'user ID';
     }
 
-    newPlayer(socket: any) {
-        let player = new Player(socket, { name: 'test' });
-        return player;
+    newUser(socket: any) {
+        let user = new User(socket, { name: 'test' });
+        return user;
     }
 
     //当前建立连接的用户
@@ -109,13 +110,13 @@ class WsServer {
 
     //所有用户
     broadcast(cmd: any, msg: any) {
-        this.onlinePlayers.forEach((player) => {
-            player.emit(cmd, msg);
+        this.onlineUsers.forEach((user) => {
+            user.emit(cmd, msg);
         });
     }
 
     checkOnline(userID: any) {
-        return this.onlinePlayers.get(userID);
+        return this.onlineUsers.get(userID);
     }
 
     kickOut(socket: any, message: any) {
@@ -126,8 +127,8 @@ class WsServer {
     }
 
     kickOutAll(msg: any) {
-        this.onlinePlayers.forEach((player) => {
-            this.kickOut(player.socket, msg);
+        this.onlineUsers.forEach((user) => {
+            this.kickOut(user.socket, msg);
         });
     }
 
@@ -136,4 +137,4 @@ class WsServer {
     }
 }
 
-export default new WsServer();
+export default new WS();

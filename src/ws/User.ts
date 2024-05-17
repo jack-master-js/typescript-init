@@ -1,7 +1,7 @@
 import logger from '../common/utils/logger';
 import request from './request';
 
-class Player {
+class User {
     socket: any;
     info: any;
     handlers: Map<any, any>;
@@ -39,31 +39,31 @@ class Player {
     }
 
     onNewConnection(socket: any) {
-        logger.info(`[ Player ] ${socket.id} new connected!`);
+        logger.info(`[ User ] ${socket.id} new connected!`);
     }
 
     onReConnection(socket: any) {
-        logger.info(`[ Player ] ${socket.id} reconnected!`);
+        logger.info(`[ User ] ${socket.id} reconnected!`);
         this.socket = socket;
         this.handler();
     }
 
     onKickOut(socket: any) {
-        logger.info(`[ Player ] ${socket.id} was kick out!`);
+        logger.info(`[ User ] ${socket.id} was kick out!`);
     }
 
-    async online(socket: any, playerOnline: any) {
-        await playerOnline();
-        logger.info(`[ Player ] ${socket.id} is online!`);
+    async online(socket: any, userOnline: any) {
+        await userOnline();
+        logger.info(`[ User ] ${socket.id} is online!`);
 
         this.joinRoom();
     }
 
-    async onOffline(socket: any, playerOffline: any) {
+    async onOffline(socket: any, userOffline: any) {
         this.socket.on('close', async () => {
             if (socket === this.socket) {
-                await playerOffline();
-                logger.info(`[ Player ] ${socket.id} is offline!`);
+                await userOffline();
+                logger.info(`[ User ] ${socket.id} is offline!`);
             }
         });
     }
@@ -71,4 +71,4 @@ class Player {
     joinRoom() {}
 }
 
-export default Player;
+export default User;
