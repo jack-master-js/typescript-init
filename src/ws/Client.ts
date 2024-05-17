@@ -2,7 +2,7 @@ import logger from '../common/utils/logger';
 import request from './request';
 // import protor from '../common/utils/protor';
 
-class WsUser {
+class Client {
     socket: any;
     info: any;
     handlers: Map<any, any>;
@@ -42,31 +42,31 @@ class WsUser {
     }
 
     onNewConnection(socket: any) {
-        logger.info(`[ User ] ${socket.id} new connected!`);
+        logger.info(`[ Client ] ${socket.id} new connected!`);
     }
 
     onReConnection(socket: any) {
-        logger.info(`[ User ] ${socket.id} reconnected!`);
+        logger.info(`[ Client ] ${socket.id} reconnected!`);
         this.socket = socket;
         this.handler();
     }
 
     onKickOut(socket: any) {
-        logger.info(`[ User ] ${socket.id} was kick out!`);
+        logger.info(`[ Client ] ${socket.id} was kick out!`);
     }
 
-    async online(socket: any, userOnline: any) {
-        await userOnline();
-        logger.info(`[ User ] ${socket.id} is online!`);
+    async online(socket: any, clientOnline: any) {
+        await clientOnline();
+        logger.info(`[ Client ] ${socket.id} is online!`);
 
         this.joinRoom();
     }
 
-    async onOffline(socket: any, userOffline: any) {
+    async onOffline(socket: any, clientOffline: any) {
         this.socket.on('close', async () => {
             if (socket === this.socket) {
-                await userOffline();
-                logger.info(`[ User ] ${socket.id} is offline!`);
+                await clientOffline();
+                logger.info(`[ Client ] ${socket.id} is offline!`);
             }
         });
     }
@@ -74,4 +74,4 @@ class WsUser {
     joinRoom() {}
 }
 
-export default WsUser;
+export default Client;

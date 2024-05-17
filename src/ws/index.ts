@@ -2,17 +2,17 @@ import WebSocket from 'ws';
 import logger from '../common/utils/logger';
 import { getWsClientIp, getQueryStr } from '../common/utils';
 import queryString from 'querystring';
-import User from './WsUser';
+import Client from './Client';
 // import protor from '../common/utils/protor';
 
 class WS {
-    onlineUsers: Map<any, any>;
-    offlineUsers: Map<any, any>;
+    onlineClients: Map<any, any>;
+    offlineClients: Map<any, any>;
     server: any;
 
     constructor() {
-        this.onlineUsers = new Map();
-        this.offlineUsers = new Map();
+        this.onlineClients = new Map();
+        this.offlineClients = new Map();
     }
 
     async start(server: any) {
@@ -25,7 +25,7 @@ class WS {
                 logger.error(`[ ws ] ${socket.id} socket error: ${e.message}`);
             });
 
-            // distribute the user from different path
+            // distribute the client from different path
             // if (req.url === '/login')
             this.handleConnection(socket, req);
         });
@@ -37,70 +37,71 @@ class WS {
         const query = queryString.parse(queryStr);
         const { token } = query;
 
-        //check user
-        const userID = this.checkUser(socket, token);
+        //check client
+        const clientID = this.checkClient(socket, token);
 
         try {
-            if (!userID) throw Error('invalid user');
-            socket.id = userID;
+            if (!clientID) throw Error('invalid client');
+            socket.id = clientID;
 
-            let onlineUser = this.onlineUsers.get(userID);
-            let offlineUser = this.offlineUsers.get(userID);
-            let user = onlineUser || offlineUser;
+            let onlineClient = this.onlineClients.get(clientID);
+            let offlineClient = this.offlineClients.get(clientID);
+            let client = onlineClient || offlineClient;
 
-            if (!user) {
-                //new user
-                user = this.newUser(socket);
+            if (!client) {
+                //new client
+                client = this.newClient(socket);
 
-                user.ip = ip;
-                user.id = userID;
+                client.ip = ip;
+                client.id = clientID;
 
-                user.onNewConnection(socket);
+                client.onNewConnection(socket);
             } else {
-                //old user
-                if (onlineUser) {
-                    throw Error('you already login somewhere else.');
+                //old client
+                if (onlineClient) {
+                    throw Error('you already login somewhere else!!!');
                     // this.kickOut(
-                    //     onlineUser.socket,
+                    //     onlineClient.socket,
                     //     'you login somewhere else.'
                     // )
-                    // user.onKickOut(socket)
+                    // client.onKickOut(socket)
                 }
 
-                if (offlineUser) {
-                    this.offlineUsers.delete(userID);
+                if (offlineClient) {
+                    this.offlineClients.delete(clientID);
                 }
 
-                user.onReConnection(socket);
+                client.onReConnection(socket);
             }
 
             //用户上线
-            user.online(socket, async () => {
-                this.onlineUsers.set(userID, user);
+            client.online(socket, async () => {
+                this.onlineClients.set(clientID, client);
 
                 this.socketMsg(socket, 'loginRes', {
-                    userInfo: user.info,
+                    clientInfo: client.info,
                 });
             });
 
             //用户下线
-            user.onOffline(socket, async () => {
-                this.onlineUsers.delete(userID);
-                this.offlineUsers.set(userID, user);
+            client.onOffline(socket, async () => {
+                this.onlineClients.delete(clientID);
+                this.offlineClients.set(clientID, client);
             });
         } catch (e) {
             this.kickOut(socket, e.message);
         }
     }
 
-    checkUser(socket: any, token: any) {
+    checkClient(socket: any, token: any) {
         if (!token) this.kickOut(socket, 'need token');
         // todo: find user in db, return a user id
-        return '1';
+        return token;
     }
 
-    newUser(socket: any) {
-        return new User(socket, { name: 'test user' });
+    newClient(socket: any) {
+        // todo: check the user info in db
+        return new Client(socket, { name: 'test user' });
     }
 
     //当前建立连接的用户
@@ -111,13 +112,13 @@ class WS {
 
     //所有用户
     broadcast(cmd: any, msg: any) {
-        this.onlineUsers.forEach((user) => {
-            user.emit(cmd, msg);
+        this.onlineClients.forEach((client) => {
+            client.emit(cmd, msg);
         });
     }
 
-    checkOnline(userID: any) {
-        return this.onlineUsers.get(userID);
+    checkOnline(clientID: any) {
+        return this.onlineClients.get(clientID);
     }
 
     kickOut(socket: any, message: any) {
@@ -128,8 +129,8 @@ class WS {
     }
 
     kickOutAll(msg: any) {
-        this.onlineUsers.forEach((user) => {
-            this.kickOut(user.socket, msg);
+        this.onlineClients.forEach((client) => {
+            this.kickOut(client.socket, msg);
         });
     }
 

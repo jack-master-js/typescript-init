@@ -24,10 +24,10 @@ message SystemNotice {
     string message = 1;
 }
 
-message UserInfo {
+message ClientInfo {
     string name = 1;
 }
 
 message LoginRes {
-    UserInfo userInfo = 1;
+    ClientInfo clientInfo = 1;
 }
