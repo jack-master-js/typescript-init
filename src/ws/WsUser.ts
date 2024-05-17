@@ -2,7 +2,7 @@ import logger from '../common/utils/logger';
 import request from './request';
 // import protor from '../common/utils/protor';
 
-class User {
+class WsUser {
     socket: any;
     info: any;
     handlers: Map<any, any>;
@@ -74,4 +74,4 @@ class User {
     joinRoom() {}
 }
 
-export default User;
+export default WsUser;

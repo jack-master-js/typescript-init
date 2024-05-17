@@ -2,7 +2,7 @@ import WebSocket from 'ws';
 import logger from '../common/utils/logger';
 import { getWsClientIp, getQueryStr } from '../common/utils';
 import queryString from 'querystring';
-import User from './User';
+import User from './WsUser';
 // import protor from '../common/utils/protor';
 
 class WS {
