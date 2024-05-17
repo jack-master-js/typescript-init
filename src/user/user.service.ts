@@ -44,8 +44,8 @@ class UserService {
     /**
      * @api {POST} /api/user/find 查询用户
      * @apiGroup User
-     * @apiQuery {Number} pageIndex 分页序号
-     * @apiQuery {Number} pageSize 分页数量
+     * @apiBody {Number} pageIndex 分页序号
+     * @apiBody {Number} pageSize 分页数量
      */
     async find(req: any, res: any, next: any) {
         try {
@@ -61,7 +61,7 @@ class UserService {
     /**
      * @api {POST} /api/user/get 获取用户详情
      * @apiGroup User
-     * @apiQuery {String} id 用户ID
+     * @apiBody {String} id 用户ID
      */
     async get(req: any, res: any, next: any) {
         try {
@@ -111,8 +111,8 @@ class UserService {
      * @api {POST} /api/user/login 登录
      * @apiGroup User
      *
-     * @apiParam {String} email 账号
-     * @apiParam {String} password 密码
+     * @apiBody {String} email 账号
+     * @apiBody {String} password 密码
      * @apiSuccess {String} token 令牌
      */
     async login(req: any, res: any, next: any) {

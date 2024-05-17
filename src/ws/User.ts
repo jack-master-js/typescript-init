@@ -1,5 +1,6 @@
 import logger from '../common/utils/logger';
 import request from './request';
+import protor from '../common/utils/protor';
 
 class User {
     socket: any;
@@ -20,11 +21,13 @@ class User {
 
     emit(cmd: any, msg: any) {
         this.socket.send(JSON.stringify({ cmd, msg }));
+        // this.socket.send(protor.encode(cmd, msg));
     }
 
     handler() {
         this.socket.on('message', (data: any) => {
             const { cmd, msg } = JSON.parse(data);
+            // const { cmd, msg } = protor.decode(data);
             if (cmd) this.trigger(cmd, msg, false);
         });
     }

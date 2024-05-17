@@ -3,6 +3,7 @@ import logger from '../common/utils/logger';
 import { getWsClientIp, getQueryStr } from '../common/utils';
 import queryString from 'querystring';
 import User from './User';
+import protor from '../common/utils/protor';
 
 class WS {
     onlineUsers: Map<any, any>;
@@ -94,18 +95,18 @@ class WS {
 
     checkUser(socket: any, token: any) {
         if (!token) this.kickOut(socket, 'need token');
-        // todo: find user in db
-        return 'user ID';
+        // todo: find user in db, return a user id
+        return '1';
     }
 
     newUser(socket: any) {
-        let user = new User(socket, { name: 'test' });
-        return user;
+        return new User(socket, { name: 'test user' });
     }
 
     //当前建立连接的用户
     socketMsg(socket: any, cmd: any, msg: any) {
         socket.send(JSON.stringify({ cmd, msg }));
+        // socket.send(protor.encode(cmd, msg));
     }
 
     //所有用户
