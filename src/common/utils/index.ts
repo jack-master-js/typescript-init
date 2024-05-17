@@ -6,13 +6,6 @@ export function page(pageIndex: number, pageSize: number, where: any) {
     };
 }
 
-export function mapToObj(map: any) {
-    return Array.from(map).reduce((obj, [key, value]) => {
-        obj[key] = value;
-        return obj;
-    }, {});
-}
-
 export function sleep(seconds: number) {
     return new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 }
