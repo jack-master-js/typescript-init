@@ -3,6 +3,7 @@ import service from './main.service';
 const router = express.Router();
 
 /* /api */
-router.get('/upload', service.upload);
+router.post('/upload', service.upload);
+router.post('/query', service.query);
 
 export default router;
