@@ -12,6 +12,7 @@ pids
 logs
 results
 tmp
+dist
 
 # Coverage reports
 coverage
@@ -32,3 +33,4 @@ bower_components
 Thumbs.db
 
 # Ignore built ts files
+dist/**/*
